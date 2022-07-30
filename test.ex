@@ -1,4 +1,5 @@
 # run with 
+
 defmodule M do
   def main do
     data_stuff()
@@ -9,7 +10,42 @@ defmodule M do
     switch_stuff()
     tuple_stuff()
     linked_list_stuff()
+    dict_stuff()
+    pattern_match_stuff()
+    lambda_stuff()
+    recursive_stuff()
+    loop_stuff()
+    enumerable_stuff()
+    list_comprehension_stuff()
+    exeption_stuff()
+    concurrency_stuff()
   end
+
+  def concurrency_stuff do
+    ask_first = IO.gets "Do you want to run concurrent loops?y/n\n"
+    if String.downcase(ask_first) == "y" do
+    spawn(fn() -> loop(50,1) end)
+    spawn(fn() -> loop(100,50) end)
+    else
+      IO.puts "your missing out!"
+    end
+    name = IO.gets "whats your name? \n"
+    language = IO.gets "What language do you speak?\n"
+
+    send(self(), {:english,String.capitalize(name)})
+
+    receive do
+      {:german, name} -> IO.puts "Guten tag #{name}"
+      {:english, name} -> IO.puts "Hello #{name}"
+      {:french, name} -> IO.puts "Bonjour #{name}"
+      {:python, name} -> IO.puts "W0w #{name}, y0ur @ 4@ck3r!"
+
+    after
+      500 -> IO.puts "Times up"
+    
+    end
+    
+  end 
   
   def data_stuff do
     my_int = 123
@@ -71,6 +107,120 @@ defmodule M do
     
   end
 
+  def dict_stuff do
+    capitals = %{"Alabama" => "Montgomery",
+		 "Alaska" => "Juneau",
+		 "Arizona" => 'Phoenix'}
+    # the atom way
+    capitals2 = %{alabama: "Montgomery",
+		 alaska: "Juneau",
+		 arizona: 'Phoenix'}
+    IO.puts "capital of Alaska is #{capitals["Alaska"] }"
+    IO.puts "capital of Arizona is #{capitals2.arizona}"
+    capitals3 = Dict.put_new(capitals, "Arkansas", "little Rock")
+    IO.puts "capital of Arizona is #{capitals3["Arkansas"]}"
+  end
+  
+
+  def pattern_match_stuff do
+    [length, width] = [20,30]
+    IO.puts "width: #{width}"
+    # _ is how you ignore an value
+    [_,[_,a]] = [20,[30,40]]
+     IO.puts "get Num: #{a}"
+  end
+
+     def lambda_stuff do
+       get_sum = fn (x,y) -> x + y end
+       IO.puts "5 + 5 = #{get_sum.(5,5)}"
+
+       get_less = &(&1 - &2)
+       IO.puts "6 - 5 = #{get_less.(6,5)}"
+
+       add_sum = fn
+       {x, y} -> IO.puts "#{x} + #{y} = #{x+y}"
+       {x, y, z} -> IO.puts "#{x} + #{y} + #{z} = #{x+y+z}"
+       end
+       add_sum.({1,2})
+       add_sum.({1,2,5})
+
+       IO.puts do_it()
+  end
+
+     def do_it(x \\ 1, y \\ 1 ) do
+       # \\ is how to do default value for args
+       x + y 
+     end
+
+     def recursive_stuff do
+       IO.puts "Factorial of 4 : #{factorial(4)}"
+     end
+     
+     def factorial(num) do
+       if num <= 1 do
+	 1
+       else
+	 result = num * factorial(num - 1)
+	 result # this is how you return 
+       end
+     end
+     
+     def loop_stuff do
+
+       IO.puts "Sum : #{sum([1,2,3])}"
+
+       loop(5,1)
+       
+     end
+     
+     def loop(0,_), do: nil
+     
+     def loop(max, min) do
+       if max < min do
+	 loop(0,0)
+       else
+	 IO.puts "Num : #{max}"
+	 loop(max - 1, min)
+       end
+     end
+     
+     def sum([]), do: 0
+       
+     def sum([h|t]), do: h + sum(t)
+
+
+     def enumerable_stuff do
+       IO.puts "Even List : #{Enum.all?([1,2,3], fn(n) -> rem(n, 2) == 0 end)}"
+       IO.puts "Even List : #{Enum.any?([1,2,3], fn(n) -> rem(n, 2) == 0 end)}"
+       Enum.each([1,2,3], fn(n) -> IO.puts n end)
+       double_list = Enum.map([1,2,3], fn(n) -> n*2 end)
+       sum_values = Enum.reduce([1,2,3], fn(n, sum) -> n + sum end)
+       IO.puts "sum : #{sum_values}"
+       IO.inspect Enum.uniq([1,2,2])
+     end
+
+     def list_comprehension_stuff do
+       testing_list = [1,2,3,4]
+       dbl_list = for n <- testing_list, do: n * 2
+       IO.puts "Doubled List"
+       IO.inspect dbl_list
+
+       even_values = for n <- testing_list, rem(n,2) == 0, do: n
+       IO.inspect even_values
+       two_list = for n <- testing_list, rem(n,2) == 0,n == 2, do: n
+       IO.inspect two_list
+     end
+
+     def exeption_stuff do
+       err = try do
+	       5 / 0
+
+	     rescue
+	     ArithmeticError -> "cant divide by zero"
+	     end
+       IO.puts err
+     end
+     
   def linked_list_stuff do
     list1 = [1,2,3]
     list2 = [4,5,6]
